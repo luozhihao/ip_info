@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html style="font-size: 50px;">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>通行证</title>
+<link href="/static/src/css/kitchen-sink.css" rel="stylesheet">
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    body, html {
+        font-family: PingFang SC,Helvetica Neue,Hiragino Sans GB,Helvetica,Microsoft YaHei,Arial;
+    }
+
+    body {
+        background: url('/static/src/images/bg2.png') no-repeat;
+        background-size: cover;
+    }
+
+    html {
+        font-family: sans-serif;
+        line-height: 1.15;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    input {
+        -webkit-appearance: none;
+        -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+    }
+   
+    .send img {
+        width: 2rem;
+        height: 3.4rem;
+    }
+
+    .img-box {
+        padding: 0.5rem;
+        height: 4rem;
+        text-align: center;
+    }
+   
+    .btn-box {
+        padding-top: 1rem;
+    }
+
+    .am-list .am-list-item .am-input-label.am-input-label-4 {
+       width: 2.2rem;
+    }
+
+    .am-list .am-list-item .am-input-label {
+        font-size: .24rem;
+    }
+    
+    .am-list .am-list-body {
+        background-color: rgba(239, 239, 239, 0.43);
+    }
+
+    .am-list-item {
+        background-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .am-button-warning {
+        border-radius: 0;
+        background-color: rgba(255, 255, 255, 0.78);
+    }
+
+    .am-button-warning:after {
+        border-radius: 0;
+    }
+
+    .am-list .am-list-item .am-input-control input {
+        font-size: .3rem;
+    }
+
+    .hide {
+        display: none;
+    }
+</style>
+</head>
+<body>
+    <div class="send">
+        <div class="img-box">
+            <img src="/static/src/images/logo.png">
+        </div>
+        <div class="am-list">
+            <div class="am-list-body">
+                <div class="am-list-item am-input-item">
+                    <div class="am-input-label am-input-label-4">蜗牛通行证（选填）</div>
+                    <div class="am-input-control">
+                        <input id="pass" type="text">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn-box">
+            <button id="submit" type="button" class="am-button am-button-warning" disabled>网速测试中...</button>
+        </div>
+    </div>
+</body>
+<script>
+window.onload = function () {
+    (function () {
+        var dataArr = [],
+            start = new Date(),
+            urlArr = [
+                {url: 'http://dw.app.woniu.com/opsmonitor.jpg', name: 'dw'},
+                {url: 'http://dl.app.snail.com/opsmonitor.jpg', name: 'dl'},
+                {url: 'http://config.9yin3d.woniu.com/opsmonitor.jpg', name: 'conf'},
+                {url: 'http://210.51.33.185:9091/download/opsmonitor.jpg', name: '上海'},
+                {url: 'http://115.182.77.159:9091/download/opsmonitor.jpg', name: '酒仙桥'},
+                {url: 'http://124.202.142.121:9091/download/opsmonitor.jpg', name: '石景山'},
+                {url: 'http://115.182.109.115:9091/download/opsmonitor.jpg', name: '盛大'},
+                {url: 'http://120.92.23.78:9091/download/opsmonitor.jpg', name: '金山'}
+            ],
+            count = urlArr.length;
+
+        var btn = document.getElementById('submit'),
+            pass = document.getElementById('pass');
+
+        btn.onclick = function () {
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', '/send/');
+            xhr.send(JSON.stringify({data: dataArr, pass: pass.value}));
+
+            xhr.onload = function () {
+                var data = JSON.parse(xhr.responseText);
+
+                location.href="/result?ret=" + data.result;
+            }
+
+            xhr.onerror = function () {
+                location.href="/result?ret=0";
+            }
+        }    
+
+        var loadBack = function (obj) {
+            count--;
+
+            dataArr.push(obj);
+
+            if (!count) {
+                btn.removeAttribute('disabled');
+                btn.innerHTML = '提 交';
+            }
+        }
+
+        var loadFn = function () {
+            urlArr.forEach(function (e) {
+                var img = new Image();
+
+                img.onload = function() {
+                    var end = new Date(),
+                        time = end - start;
+
+                    var obj = {
+                        name: e.name, 
+                        status: 200, 
+                        time: time, 
+                        size: 3386
+                    }
+
+                    loadBack(obj);
+                };
+
+                img.onerror = function(){
+                    var obj = {
+                        name: e.name, 
+                        status: 500, 
+                        time: null, 
+                        size: 3386
+                    }
+
+                    loadBack(obj);
+                };
+
+                img.src = e.url + '?v=' + Math.random();  
+            })
+        }
+
+        loadFn();
+    })();
+}
+</script>
+</html>

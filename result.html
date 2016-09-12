@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>提交结果</title>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    html {
+        font-size: 62.5%;
+    }
+
+    .send img {
+        display: block;
+        width: 44.4rem;
+        height: 44.4rem;
+        margin: 20rem auto 0;
+    }
+
+    .send p {
+        color: #635858;
+        text-align: center;
+        font: 6.4rem/11.4rem microsoft yahei,Tahoma,Helvetica,Arial,\5b8b\4f53,sans-serif;
+    }
+</style>
+</head>
+<body>
+    <div class="send">
+        {% if ret %}
+        <img src="/static/src/images/success.png">
+        <p>信息已提交成功！</p>
+        {% else %}
+        <img src="/static/src/images/error.png">
+        <p>信息提交失败了！</p>
+        {% endif %}
+        <p>{{ msg }}</p>
+    </div>
+</body>
+</html>
